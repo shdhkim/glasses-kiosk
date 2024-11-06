@@ -23,7 +23,7 @@ public class UserController {
     private final UserService userService;
     private final UserRepository userRepository;
 
-    @Operation(summary = "사진 저장", description = "사진을 저장한다.")
+    @Operation(summary = "이미지 저장", description = "이미지를 저장한다.")
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("/image/save/{userId}")
     public Response imageSave(@PathVariable Long userId, @RequestPart("image") MultipartFile[] files) throws IOException {
@@ -36,7 +36,7 @@ public class UserController {
 
         return new Response("성공", "이미지 저장 성공", userService.save(user, files));
     }
-    @Operation(summary = "사진 전송", description = "사진을 전송한다.")
+    @Operation(summary = "이미지 리턴", description = "이미지를 리턴한다.")
     @GetMapping("/image/send/{userId}")
     public ResponseEntity<?> imageSend(@PathVariable("userId") Long userId) {
         List<byte[]> downloadImage = userService.send(userId);
