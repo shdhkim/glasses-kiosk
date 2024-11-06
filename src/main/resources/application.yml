@@ -6,16 +6,6 @@ server:
       charset: utf-8
       enabled: true
       force: true
-jpa:
-  hibernate:
-    ddl-auto: update
-  properties:
-    hibernate:
-      format_sql: true
-      show_sql: false
-      highlight_sql: true
-  defer-datasource-initialization: true
-
 spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
@@ -24,3 +14,12 @@ spring:
     password: csedbadmin
   thymeleaf:
     cache: false
+  jpa:
+   hibernate:
+     ddl-auto: update
+   properties:
+     hibernate:
+       format_sql: true
+       show_sql: true
+       highlight_sql: true
+   defer-datasource-initialization: true

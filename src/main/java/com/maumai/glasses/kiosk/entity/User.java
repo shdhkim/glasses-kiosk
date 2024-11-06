@@ -4,7 +4,6 @@ import com.maumai.glasses.kiosk.role.UserRole;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.format.annotation.DateTimeFormat;
-
 import java.time.LocalDate;
 
 @NoArgsConstructor
@@ -19,26 +18,27 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long userId;
 
-    @Column(nullable = false)
+    @Column
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate birthday;
 
-    @Column(nullable = false)
+    @Column
     private String faceShape;
 
-    @Column(nullable = false)
+    @Column
     private String personalColor;
 
     @Lob
+    @Column
     private byte[] userImage;
 
-    @Column(nullable = false)
+    @Column
     private String feedBack;
 
-    @Column(nullable = false)
+    @Column
     private String glassesFrame;
 
-    @Column(nullable = false)
+    @Column
     private String glassesColor;
 
     private UserRole role; // USER
