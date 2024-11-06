@@ -43,6 +43,13 @@ public class UserController {
         return ResponseEntity.ok(downloadImage);
     }
 
+    @Operation(summary="유저 정보 찾기", description = "유저 정보를 리턴한다.")
+    @ResponseStatus(HttpStatus.OK)
+    @GetMapping("/user/find/{userId}")
+    public Response<?> findUser(@PathVariable("userId") Long userId) {
+        return new Response<>("true", "조회 성공", userService.findUser(userId));
+    }
+
     @Operation(summary = "피드백 저장", description = "피드백을 저장한다.")
     @PostMapping("/feedback/save")
     public Response saveFeedBack(@RequestPart("userId") Long userId, @RequestPart("feedBack") String feedBack) throws IOException {
@@ -59,10 +66,66 @@ public class UserController {
         return new Response("리턴", "피드백 리턴 성공", userService.returnFeedBack(user));
     }
 
-    @Operation(summary="유저 정보 찾기", description = "유저 정보를 리턴한다.")
-    @ResponseStatus(HttpStatus.OK)
-    @GetMapping("/user/find/{userid}")
-    public Response<?> findUser(@PathVariable("userid") Long userid) {
-        return new Response<>("true", "조회 성공", userService.findUser(userid));
+    @Operation(summary = "얼굴형 저장", description = "얼굴형을 저장한다.")
+    @PostMapping("/faceshape/save")
+    public Response saveFaceShape(@RequestPart("userId") Long userId, @RequestPart("faceShape") String faceShape) throws IOException {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자입니다."));
+        return new Response("성공", "얼굴형 저장 성공", userService.saveFaceShape(user, faceShape));
+    }
+
+    @Operation(summary = "얼굴형 리턴", description = "얼굴형을 리턴한다.")
+    @PostMapping("/faceshape/return")
+    public Response returnFaceShape(@RequestPart("userId") Long userId) throws IOException {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자입니다."));
+        return new Response("리턴", "얼굴형 리턴 성공", userService.returnFaceShape(user));
+    }
+
+    @Operation(summary = "퍼스널 컬러 저장", description = "퍼스널 컬러를 저장한다.")
+    @PostMapping("/personalcolor/save")
+    public Response savePersonalColor(@RequestPart("userId") Long userId, @RequestPart("personalColor") String personalColor) throws IOException {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자입니다."));
+        return new Response("성공", "퍼스널 컬러 저장 성공", userService.savePersonalColor(user, personalColor));
+    }
+
+    @Operation(summary = "퍼스널 컬러 리턴", description = "퍼스널 컬러를 리턴한다.")
+    @PostMapping("/personalcolor/return")
+    public Response returnPersonalColor(@RequestPart("userId") Long userId) throws IOException {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자입니다."));
+        return new Response("리턴", "퍼스널 컬러 리턴 성공", userService.returnPersonalColor(user));
+    }
+    @Operation(summary = "안경 프레임 저장", description = "안경 프레임을 저장한다.")
+    @PostMapping("/glassesframe/save")
+    public Response saveGlassesFrame(@RequestPart("userId") Long userId, @RequestPart("glassesFrame") String glassesFrame) throws IOException {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자입니다."));
+        return new Response("성공", "안경 프레임 저장 성공", userService.saveGlassesFrame(user, glassesFrame));
+    }
+
+    @Operation(summary = "안경 프레임 리턴", description = "안경 프레임을 리턴한다.")
+    @PostMapping("/glassesframe/return")
+    public Response returnGlassesFrame(@RequestPart("userId") Long userId) throws IOException {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자입니다."));
+        return new Response("리턴", "안경 프레임 리턴 성공", userService.returnGlassesFrame(user));
+    }
+
+    @Operation(summary = "안경 색상 저장", description = "안경 색상을 저장한다.")
+    @PostMapping("/glassescolor/save")
+    public Response saveGlassesColor(@RequestPart("userId") Long userId, @RequestPart("glassesColor") String glassesColor) throws IOException {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자입니다."));
+        return new Response("성공", "안경 색상 저장 성공", userService.saveGlassesColor(user, glassesColor));
+    }
+
+    @Operation(summary = "안경 색상 리턴", description = "안경 색상을 리턴한다.")
+    @PostMapping("/glassescolor/return")
+    public Response returnGlassesColor(@RequestPart("userId") Long userId) throws IOException {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자입니다."));
+        return new Response("리턴", "안경 색상 리턴 성공", userService.returnGlassesColor(user));
     }
 }

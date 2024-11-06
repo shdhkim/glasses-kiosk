@@ -36,7 +36,7 @@ public class User {
     private String feedBack;
 
     @Column(nullable = false)
-    private String glassesModel;
+    private String glassesFrame;
 
     @Column(nullable = false)
     private String glassesColor;

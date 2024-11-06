@@ -47,10 +47,56 @@ public class UserService {
         return user;
     }
 
+    @Transactional
     public String returnFeedBack(User user) throws IOException {
         return user.getFeedBack();
     }
 
+    @Transactional
+    public User saveFaceShape(User user, String faceShape) throws IOException {
+        user.setFaceShape(faceShape);
+        return user;
+    }
+
+    @Transactional
+    public String returnFaceShape(User user) throws IOException {
+        return user.getFaceShape();
+    }
+
+    @Transactional
+    public User savePersonalColor(User user, String personalColor) throws IOException {
+        user.setPersonalColor(personalColor);
+        return user;
+    }
+
+    @Transactional
+    public String returnPersonalColor(User user) throws IOException {
+        return user.getPersonalColor();
+    }
+
+    @Transactional
+    public User saveGlassesFrame(User user, String glassesFrame) throws IOException {
+        user.setGlassesFrame(glassesFrame);
+        return user;
+    }
+
+    @Transactional
+    public String returnGlassesFrame(User user) throws IOException {
+        return user.getGlassesFrame();
+    }
+
+    @Transactional
+    public User saveGlassesColor(User user, String glassesColor) throws IOException {
+        user.setGlassesColor(glassesColor);
+        return user;
+    }
+
+    @Transactional
+    public String returnGlassesColor(User user) throws IOException {
+        return user.getGlassesColor();
+    }
+
+    @Transactional
     public User findUser(Long userid) {
         return userRepository.findById(userid).orElseThrow(()-> {
             return new IllegalArgumentException("User ID를 찾을 수 없습니다.");
