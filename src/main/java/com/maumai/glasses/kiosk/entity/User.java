@@ -1,10 +1,13 @@
 package com.maumai.glasses.kiosk.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.maumai.glasses.kiosk.role.UserRole;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.format.annotation.DateTimeFormat;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -15,12 +18,9 @@ import java.time.LocalDate;
 public class User {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long userId;
 
-    @Column
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
-    private LocalDate birthday;
+
 
     @Column
     private String faceShape;
@@ -29,7 +29,7 @@ public class User {
     private String personalColor;
 
     @Lob
-    @Column
+    @Column(columnDefinition = "MEDIUMBLOB")
     private byte[] userImage;
 
     @Column
@@ -42,5 +42,8 @@ public class User {
     private String glassesColor;
 
     private UserRole role; // USER
+    @JsonIgnore
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Glasses> glassesList = new ArrayList<>();
 
 }
