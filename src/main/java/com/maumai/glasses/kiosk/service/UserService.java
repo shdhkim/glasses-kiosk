@@ -8,10 +8,12 @@ import com.maumai.glasses.kiosk.util.ImageUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.web.client.RestTemplateBuilder;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -53,26 +55,42 @@ public class UserService {
 
         // Flask 서버로 전송 (트랜잭션 외부에서 수행)
         try {
-            String flaskUrl = "http://localhost:5000/process-image";
-            Map<String, Object> requestBody = new HashMap<>();
-            requestBody.put("userId", savedUser.getUserId());
-            requestBody.put("image", files[0].getBytes());
+            String flaskUrl = "http://127.0.0.1:5000/upload";
 
-            ResponseEntity<String> flaskResponse = restTemplate.postForEntity(flaskUrl, requestBody, String.class);
+            // 파일을 ByteArrayResource로 변환
+            ByteArrayResource byteArrayResource = new ByteArrayResource(files[0].getBytes()) {
+                @Override
+                public String getFilename() {
+                    return files[0].getOriginalFilename(); // 파일 이름 설정
+                }
+            };
 
-            if (flaskResponse.getStatusCode() == HttpStatus.OK) {
-                return ResponseEntity.status(HttpStatus.CREATED)
-                        .body(new Response<>("성공", "이미지 저장 및 Flask 서버 전송 성공", null));
-            } else {
-                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                        .body(new Response<>("실패", "Flask 서버 통신 실패", null));
+            // 전송 데이터 설정
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.MULTIPART_FORM_DATA);
+            MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
+            body.add("image", byteArrayResource);
+
+            HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(body, headers);
+
+            // Flask 서버로 전송 및 응답 수신
+            ResponseEntity<Map> response = restTemplate.exchange(flaskUrl, HttpMethod.POST, requestEntity, Map.class);
+            Map<String, Object> result = response.getBody();
+
+            // 분석 결과를 user 엔티티에 저장
+            if (result != null && result.containsKey("tone")) {
+                String tone = (String) result.get("tone");
+                user.setPersonalColor(tone);
+                userRepository.save(user); // DB에 저장
             }
+            return ResponseEntity.status(HttpStatus.CREATED)
+                    .body(new Response<>("성공", "이미지 저장 및 Flask 서버 전송 성공", null));
         } catch (Exception e) {
-            // Flask 서버 연결 실패 시, 데이터 저장 후에도 오류 응답 반환
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(new Response<>("부분 성공", "Flask 서버 통신 실패. 데이터베이스에는 저장됨", null));
         }
     }
+
     @Transactional
     public ResponseEntity<Response<UserDto>> getUserDtoById(Long userId) {
         return userRepository.findById(userId)
