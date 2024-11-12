@@ -2,7 +2,6 @@ package com.maumai.glasses.kiosk.controller;
 
 import com.maumai.glasses.kiosk.entity.User;
 import com.maumai.glasses.kiosk.entity.UserDto;
-import com.maumai.glasses.kiosk.repository.UserRepository;
 import com.maumai.glasses.kiosk.response.Response;
 import com.maumai.glasses.kiosk.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -20,7 +19,6 @@ import java.util.List;
 public class UserController {
 
     private final UserService userService;
-    private final UserRepository userRepository;
 
     @Operation(summary = "이미지 저장 및 Flask 전송", description = "이미지를 저장하고 Flask 서버로 전송한다.")
     @PostMapping("/image/save/{userId}")
