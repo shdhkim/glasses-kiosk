@@ -1,7 +1,11 @@
 package com.maumai.glasses.kiosk.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Data
 @Entity
@@ -30,7 +34,7 @@ public class Glasses {
     @Column
     private String size;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = false)
-    private User user;
+    @OneToMany(mappedBy = "glasses", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
+    private List<GlassesRecommend> glassesRecommendList = new ArrayList<>();
 }

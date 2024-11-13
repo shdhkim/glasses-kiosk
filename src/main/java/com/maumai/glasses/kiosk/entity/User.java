@@ -42,8 +42,8 @@ public class User {
     private String glassesColor;
 
     private UserRole role; // USER
-    @JsonIgnore
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Glasses> glassesList = new ArrayList<>();
+    @JsonIgnore
+    private List<GlassesRecommend> glassesRecommendList = new ArrayList<>();
 
 }

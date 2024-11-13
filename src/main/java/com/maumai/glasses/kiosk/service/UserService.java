@@ -87,7 +87,7 @@ public class UserService {
                     .body(new Response<>("성공", "이미지 저장 및 Flask 서버 전송 성공", null));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(new Response<>("부분 성공", "Flask 서버 통신 실패. 데이터베이스에는 저장됨", null));
+                    .body(new Response<>("부분 성공", "Flask 서버 통신 실패. 데이터베이스에는 저장됨"+ e.getMessage(), null));
         }
     }
 
@@ -116,12 +116,13 @@ public class UserService {
     @Transactional
     public ResponseEntity<Response<String>> sendFeedbackToFlask(Long userId, String feedback) {
         // 사용자 확인 및 피드백 저장
-        User user = findUserById(userId);
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자입니다. ID: " + userId));
         user.setFeedBack(feedback);
         userRepository.save(user); // DB에 피드백 업데이트
 
         // Flask 서버로 피드백 전송
-        String flaskUrl = "http://localhost:5000/process-feedback";
+        String flaskUrl = "http://localhost:5000/feedback";
         Map<String, Object> requestBody = new HashMap<>();
         requestBody.put("userId", userId);
         requestBody.put("feedback", feedback);
@@ -129,16 +130,13 @@ public class UserService {
         try {
             ResponseEntity<String> flaskResponse = restTemplate.postForEntity(flaskUrl, requestBody, String.class);
 
-            if (flaskResponse.getStatusCode() == HttpStatus.OK) {
-                return ResponseEntity.status(HttpStatus.OK)
+
+                return ResponseEntity.status(HttpStatus.CREATED)
                         .body(new Response<>("성공", "피드백 저장 및 Flask 서버 전송 성공", null));
-            } else {
-                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                        .body(new Response<>("실패", "Flask 서버 전송 실패", null));
-            }
+
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(new Response<>("실패", "Flask 서버 전송 중 예외 발생: " + e.getMessage(), null));
+                    .body(new Response<>("부분 성공", "Flask 서버 통신 실패. 데이터베이스에는 저장됨" + e.getMessage(), null));
         }
     }
 
