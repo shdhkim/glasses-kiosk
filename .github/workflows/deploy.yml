@@ -1,0 +1,42 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      #  저장소 코드 가져오기
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      #  JDK 설정
+      - name: Set up JDK
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '17' # 원하는 Java 버전
+
+
+      - name: Build with Gradle
+        run: ./gradlew build
+
+      #  서버에 배포
+      - name: Deploy to Server
+        env:
+          HOST: ${{ secrets.DEPLOY_HOST }}  # 서버 주소
+          USER: ${{ secrets.DEPLOY_USER }}  # SSH 사용자명
+          KEY: ${{ secrets.DEPLOY_KEY }}    # SSH 키
+          APP_NAME: my-spring-app          # 애플리케이션 이름
+        run: |
+          echo "$KEY" > deploy_key.pem
+          chmod 600 deploy_key.pem
+          scp -i deploy_key.pem build/libs/*.jar $USER@$HOST:~/apps/$APP_NAME.jar
+          ssh -i deploy_key.pem $USER@$HOST <<EOF
+            pgrep -f $APP_NAME | xargs -r kill -9
+            nohup java -jar ~/apps/$APP_NAME.jar > ~/apps/$APP_NAME.log 2>&1 &
+          EOF
