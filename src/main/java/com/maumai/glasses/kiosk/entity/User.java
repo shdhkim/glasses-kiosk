@@ -20,8 +20,6 @@ public class User {
     @Id
     private Long userId;
 
-
-
     @Column
     private String faceShape;
 

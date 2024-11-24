@@ -15,12 +15,11 @@ public class Glasses {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Lob
-    @Column(columnDefinition = "MEDIUMBLOB")
-    private byte[] image;
+    @Column
+    private String image_path;
 
     @Column
-    private String productName;
+    private String model;
 
     @Column
     private Double price;
@@ -29,10 +28,22 @@ public class Glasses {
     private String brand;
 
     @Column
+    private String shape;
+
+    @Column
+    private String material;
+
+    @Column
     private String color;
 
     @Column
-    private String size;
+    private Double width;
+
+    @Column
+    private Double length;
+
+    @Column
+    private Double weight;
 
     @OneToMany(mappedBy = "glasses", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnore
