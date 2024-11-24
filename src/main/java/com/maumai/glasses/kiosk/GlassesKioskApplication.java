@@ -7,7 +7,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 public class GlassesKioskApplication {
 
 	public static void main(String[] args) {
-		  SpringApplication.run(GlassesKioskApplication.class, args);
+		   SpringApplication.run(GlassesKioskApplication.class, args);
 	}
 
 }
