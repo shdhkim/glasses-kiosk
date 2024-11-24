@@ -27,19 +27,17 @@ public class UserController {
             @RequestPart("image") MultipartFile[] files) throws IOException {
         return userService.save(userId, files);
     }
-    @Operation(summary = "유저 정보 조회", description = "유저 ID로 유저의 정보(UserDto)를 조회한다.")
+    @Operation(summary = "유저 정보 일부 조회", description = "유저의 정보(UserDto)를 조회한다.")
     @GetMapping("/find/{userId}")
     public ResponseEntity<Response<UserDto>> getUserDtoById(@PathVariable Long userId) {
         return userService.getUserDtoById(userId);
     }
-    @Operation(summary = "이미지 리턴", description = "이미지를 리턴한다.")
+    @Operation(summary = "합성 이미지 리턴", description = "Flask 서버를 이용해 사용자의 이미지를 처리해서 얻은 결과를 반환한다.")
     @GetMapping("/image/send/{userId}")
-    public ResponseEntity<List<byte[]>> imageSend(@PathVariable("userId") Long userId) {
-        List<byte[]> downloadImage = userService.send(userId);
-        return ResponseEntity.ok(downloadImage);
+    public ResponseEntity<Response<String>> imageSend(@PathVariable("userId") Long userId) {
+        return userService.send(userId);
     }
-
-    @Operation(summary = "유저 정보 찾기", description = "유저 정보를 리턴한다.")
+    @Operation(summary = "유저 정보 전체 조회", description = "유저의 정보를 조회한다.")
     @GetMapping("findall/{userId}")
     public ResponseEntity<Response<User>> findUser(@PathVariable("userId") Long userId) {
         return userService.findUser(userId);

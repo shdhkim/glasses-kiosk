@@ -46,11 +46,12 @@ public class UserService {
             user.setUserId(userId);
         }
 
-        // 이미지 저장
+        // MultipartFile 이미지 저장
         if (files != null && files.length > 0 && !files[0].isEmpty()) {
             byte[] compressedImage = ImageUtils.compressImage(files[0].getBytes());
-            user.setUserImage(compressedImage);
+            user.setUserImage(compressedImage); // 요청받은 이미지 저장
         }
+
         User savedUser = userRepository.save(user); // 데이터베이스에 먼저 저장
 
         // Flask 서버로 전송 (트랜잭션 외부에서 수행)
@@ -77,17 +78,20 @@ public class UserService {
             ResponseEntity<Map> response = restTemplate.exchange(flaskUrl, HttpMethod.POST, requestEntity, Map.class);
             Map<String, Object> result = response.getBody();
 
-            // 분석 결과를 user 엔티티에 저장
+
+            // Flask로부터 받은 개인 컬러 분석 결과 저장
             if (result != null && result.containsKey("tone")) {
                 String tone = (String) result.get("tone");
                 user.setPersonalColor(tone);
-                userRepository.save(user); // DB에 저장
             }
+
+            userRepository.save(user); // DB에 저장
+
             return ResponseEntity.status(HttpStatus.CREATED)
                     .body(new Response<>("성공", "이미지 저장 및 Flask 서버 전송 성공", null));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(new Response<>("부분 성공", "Flask 서버 통신 실패. 데이터베이스에는 저장됨"+ e.getMessage(), null));
+                    .body(new Response<>("부분 성공", "Flask 서버 통신 실패. 데이터베이스에는 저장됨: " + e.getMessage(), null));
         }
     }
 
@@ -145,19 +149,59 @@ public class UserService {
         User user = findUserById(userId);
         return ResponseEntity.ok(new Response<>("true", "유저 조회 성공", user));
     }
-
     @Transactional
-    public List<byte[]> send(Long userId) {
-        User user = findUserById(userId);
-        List<byte[]> compressedImages = new ArrayList<>();
+    public ResponseEntity<Response<String>> send(Long userId) {
+        // 사용자 조회
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자입니다. ID: " + userId));
 
-        if (user.getUserImage() != null) {
-            byte[] compressedImage = ImageUtils.decompressImage(user.getUserImage());
-            compressedImages.add(compressedImage);
+        try {
+            // 이미지 압축 해제
+            byte[] decompressedImage = ImageUtils.decompressImage(user.getUserImage());
+
+            // Flask 서버로 이미지 전송
+            String flaskUrl = "http://127.0.0.1:5000/process-image";
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.MULTIPART_FORM_DATA);
+
+            ByteArrayResource byteArrayResource = new ByteArrayResource(decompressedImage) {
+                @Override
+                public String getFilename() {
+                    return "user_image.jpg"; // 파일 이름 설정
+                }
+            };
+
+            MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
+
+            body.add("image", byteArrayResource);
+
+            HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(body, headers);
+
+            // Flask 서버로 요청 전송 및 응답 수신
+            ResponseEntity<Map> flaskResponse = restTemplate.exchange(flaskUrl, HttpMethod.POST, requestEntity, Map.class);
+
+            // Flask에서 받은 Base64 인코딩된 이미지
+            Map<String, Object> responseBody = flaskResponse.getBody();
+            if (responseBody != null && responseBody.containsKey("image")) {
+                String base64EncodedImage = (String) responseBody.get("image");
+
+                // DB 저장
+                byte[] receivedImage = Base64.getDecoder().decode(base64EncodedImage);
+                byte[] compressedMixImage = ImageUtils.compressImage(receivedImage);
+                user.setMixImage(compressedMixImage);
+                userRepository.save(user);
+
+                // 성공 응답 반환 (Base64 인코딩된 이미지 포함)
+                return ResponseEntity.status(HttpStatus.CREATED)
+                        .body(new Response<>("성공", "이미지를 성공적으로 Flask 서버에 전송하고 응답을 처리했습니다.", base64EncodedImage));
+            }
+            return ResponseEntity.status(HttpStatus.OK)
+                    .body(new Response<>("성공", "이미지를 성공적으로 Flask 서버에 전송하고 응답을 처리했습니다.", null));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new Response<>("실패", "Flask 서버 통신 실패: " + e.getMessage(), null));
         }
-        return compressedImages;
     }
-
     private User findUserById(Long userId) {
         return userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자입니다. ID: " + userId));

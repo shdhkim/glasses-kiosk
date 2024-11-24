@@ -29,7 +29,9 @@ public class User {
     @Lob
     @Column(columnDefinition = "MEDIUMBLOB")
     private byte[] userImage;
-
+    @Lob
+    @Column(columnDefinition = "MEDIUMBLOB")
+    private byte[] mixImage;
     @Column
     private String feedBack;
 
