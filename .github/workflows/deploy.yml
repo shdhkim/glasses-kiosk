@@ -31,9 +31,18 @@ jobs:
           USER: ${{ secrets.DEPLOY_USER }}
           KEY: ${{ secrets.DEPLOY_KEY }}
         run: |
+          # EC2의 호스트 키를 등록
+          mkdir -p ~/.ssh
+          ssh-keyscan -H $HOST >> ~/.ssh/known_hosts
+          
+          # SSH 키 파일 생성
           echo "$KEY" > deploy_key.pem
           chmod 400 deploy_key.pem
+          
+          # 애플리케이션 JAR 파일 업로드
           scp -i deploy_key.pem build/libs/*.jar $USER@$HOST:/home/ec2-user/my-app.jar
+          
+          # EC2 서버에서 애플리케이션 실행
           ssh -i deploy_key.pem $USER@$HOST <<EOF
             pkill -f my-app.jar || true
             nohup java -jar /home/ec2-user/my-app.jar > /home/ec2-user/my-app.log 2>&1 &
