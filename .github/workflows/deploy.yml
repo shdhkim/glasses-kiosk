@@ -14,9 +14,12 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      # 2. Gradle 실행 권한 부여
-      - name: Grant execute permission for Gradle wrapper
-        run: chmod +x ./gradlew
+      # 2. Java 17 설정
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'temurin'
 
       # 3. Gradle 빌드
       - name: Build Project
@@ -54,33 +57,27 @@ jobs:
           echo "$KEY" > deploy_key.pem
           chmod 400 deploy_key.pem
           ssh-keyscan -H $HOST >> ~/.ssh/known_hosts
-
+          
           # EC2에 접속하여 Docker 설치 확인 및 실행
           ssh -i deploy_key.pem $USER@$HOST <<EOF
             # Docker 설치 확인 및 설치
             if ! [ -x "$(command -v docker)" ]; then
-              echo "Docker not found, installing..."
               sudo yum update -y
               sudo yum install -y docker
               sudo service docker start
-              sudo usermod -aG docker $USER
             fi
 
-            # Docker 데몬 실행 확인
-            if ! sudo systemctl is-active --quiet docker; then
-              sudo service docker start
-            fi
+            # Docker 그룹에 사용자 추가 및 권한 적용
+            sudo usermod -aG docker $USER
+            newgrp docker || true
 
             # 기존 컨테이너 중지 및 삭제
-            if [ $(docker ps -q --filter "name=spring-app") ]; then
-              echo "Stopping existing container..."
+            if docker ps -q --filter "name=spring-app"; then
               docker stop spring-app
               docker rm spring-app
             fi
 
             # 최신 이미지 가져오기 및 실행
-            echo "Pulling latest Docker image..."
             docker pull $IMAGE_NAME
-            echo "Running new container..."
             docker run -d --name spring-app -p 8080:8080 $IMAGE_NAME
           EOF
