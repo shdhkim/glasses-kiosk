@@ -51,7 +51,7 @@ jobs:
       # 8. EC2로 배포
       - name: Deploy to EC2
         env:
-          HOST: ${{ secrets.HOST }}  # EC2의 퍼블릭 IP 또는 도메인 이름
+          HOST: ${{ secrets.DEPlOY_HOST }}  # EC2의 퍼블릭 IP 또는 도메인 이름
           USER: ${{ secrets.DEPLOY_USER }}  # EC2의 SSH 사용자 이름
           KEY: ${{ secrets.DEPLOY_KEY }}  # SSH 개인 키
           IMAGE_NAME: ${{ secrets.DOCKER_USERNAME }}/spring-app:latest  # Docker 이미지 이름
