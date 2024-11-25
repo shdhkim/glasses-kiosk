@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # 1. Checkout 코드
+      # 1. 코드 체크아웃
       - name: Checkout code
         uses: actions/checkout@v4
 
@@ -29,23 +29,21 @@ jobs:
           push: true
           tags: ${{ secrets.DOCKER_USERNAME }}/spring-app:latest
 
-      # 4. EC2에 Docker 컨테이너 배포
+      # 4. EC2로 배포
       - name: Deploy to EC2
         env:
-          HOST: ${{ secrets.DEPLOY_HOST }}
+          HOST: ${{ secrets.HOST }}
           USER: ${{ secrets.DEPLOY_USER }}
           KEY: ${{ secrets.DEPLOY_KEY }}
           IMAGE_NAME: ${{ secrets.DOCKER_USERNAME }}/spring-app:latest
         run: |
-          # EC2의 호스트 키 등록
+          #  SSH 설정
           mkdir -p ~/.ssh
           ssh-keyscan -H $HOST >> ~/.ssh/known_hosts
-          
-          # SSH 키 파일 생성
           echo "$KEY" > deploy_key.pem
           chmod 400 deploy_key.pem
           
-          # EC2에서 Docker 컨테이너 실행
+          #  EC2에 접속하여 Docker 설치 확인 및 실행
           ssh -i deploy_key.pem $USER@$HOST <<EOF
             # Docker 설치 확인 및 설치
             if ! [ -x "$(command -v docker)" ]; then
@@ -54,12 +52,12 @@ jobs:
               sudo service docker start
               sudo usermod -aG docker $USER
             fi
-          
+
             # 기존 컨테이너 중지 및 삭제
             docker stop spring-app || true
             docker rm spring-app || true
-          
-            # 최신 Docker 이미지 실행
+
+            # 최신 이미지 가져오기 및 실행
             docker pull $IMAGE_NAME
             docker run -d --name spring-app -p 8080:8080 $IMAGE_NAME
           EOF
