@@ -6,7 +6,8 @@ import com.maumai.glasses.kiosk.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
+import java.util.Optional;
 
-public interface GlassesRepository extends JpaRepository<GlassesRecommend, Long> {
-    List<GlassesRecommend> findByUser(User user);
+public interface GlassesRepository extends JpaRepository<Glasses, Long> {
+
 }

@@ -1,7 +1,11 @@
 package com.maumai.glasses.kiosk.service;
 
+import com.maumai.glasses.kiosk.entity.Glasses;
+import com.maumai.glasses.kiosk.entity.GlassesRecommend;
 import com.maumai.glasses.kiosk.entity.User;
 import com.maumai.glasses.kiosk.entity.UserDto;
+import com.maumai.glasses.kiosk.repository.GlassesRecommendRepository;
+import com.maumai.glasses.kiosk.repository.GlassesRepository;
 import com.maumai.glasses.kiosk.repository.UserRepository;
 import com.maumai.glasses.kiosk.response.Response;
 import com.maumai.glasses.kiosk.util.ImageUtils;
@@ -26,11 +30,15 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final RestTemplate restTemplate;
+    private final GlassesRepository glassesRepository;
+    private final GlassesRecommendRepository glassesRecommendRepository;
 
     @Autowired
-    public UserService(UserRepository userRepository, RestTemplateBuilder restTemplateBuilder) {
+    public UserService(UserRepository userRepository, RestTemplateBuilder restTemplateBuilder, GlassesRepository glassesRepository, GlassesRecommendRepository glassesRecommendRepository) {
         this.userRepository = userRepository;
         this.restTemplate = restTemplateBuilder.build();
+        this.glassesRepository = glassesRepository;
+        this.glassesRecommendRepository = glassesRecommendRepository;
     }
 
     @Transactional
@@ -52,9 +60,9 @@ public class UserService {
             user.setUserImage(compressedImage); // 요청받은 이미지 저장
         }
 
-        User savedUser = userRepository.save(user); // 데이터베이스에 먼저 저장
+        // 먼저 User 객체를 데이터베이스에 저장
+        User savedUser = userRepository.save(user);
 
-        // Flask 서버로 전송 (트랜잭션 외부에서 수행)
         try {
             String flaskUrl = "http://127.0.0.1:5000/upload";
 
@@ -78,17 +86,54 @@ public class UserService {
             ResponseEntity<Map> response = restTemplate.exchange(flaskUrl, HttpMethod.POST, requestEntity, Map.class);
             Map<String, Object> result = response.getBody();
 
+            if (result != null) {
+                // tone 값 저장
+                if (result.containsKey("tone")) {
+                    String tone = (String) result.get("tone");
+                    user.setPersonalColor(tone);
+                }
 
-            // Flask로부터 받은 개인 컬러 분석 결과 저장
-            if (result != null && result.containsKey("tone")) {
-                String tone = (String) result.get("tone");
-                user.setPersonalColor(tone);
+                // face_shape 값 저장
+                if (result.containsKey("face_shape")) {
+                    String faceShape = (String) result.get("face_shape");
+                    user.setFaceShape(faceShape);
+                }
+
+                // glasses_id 값 저장 (최대 5개까지 받음)
+                if (result.containsKey("glasses_id") && result.get("glasses_id") instanceof List) {
+                    List<Long> glassesIds = (List<Long>) result.get("glasses_id");  // glassesId가 Long으로 넘어옴
+                    if (glassesIds.size() > 5) {
+                        glassesIds = glassesIds.subList(0, 5); // 최대 5개만 받기
+                    }
+
+                    // GlassesRecommend 엔티티로 변환하여 저장
+                    List<GlassesRecommend> glassesRecommendList = new ArrayList<>();
+                    for (Long glassesId : glassesIds) {
+                        Optional<Glasses> glassesOptional = glassesRepository.findById(glassesId); // glassesId로 Glasses 엔티티 찾기
+                        if (glassesOptional.isPresent()) {
+                            Glasses glasses = glassesOptional.get();
+                            GlassesRecommend glassesRecommend = GlassesRecommend.builder()
+                                    .user(user)
+                                    .glasses(glasses) // Glasses 엔티티 연결
+                                    .build();
+
+                            glassesRecommendList.add(glassesRecommend);
+                        }
+                    }
+
+                    // GlassesRecommend 리스트를 User 객체에 설정
+                    user.setGlassesRecommendList(glassesRecommendList);
+                }
+
+                userRepository.save(user); // 최종적으로 업데이트된 User 객체를 DB에 저장
+
+                return ResponseEntity.status(HttpStatus.CREATED)
+                        .body(new Response<>("성공", "이미지 저장 및 Flask 서버 전송 성공", null));
+            } else {
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                        .body(new Response<>("실패", "Flask 서버 응답 오류", null));
             }
 
-            userRepository.save(user); // DB에 저장
-
-            return ResponseEntity.status(HttpStatus.CREATED)
-                    .body(new Response<>("성공", "이미지 저장 및 Flask 서버 전송 성공", null));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(new Response<>("부분 성공", "Flask 서버 통신 실패. 데이터베이스에는 저장됨: " + e.getMessage(), null));
@@ -131,18 +176,57 @@ public class UserService {
         requestBody.put("userId", userId);
         requestBody.put("feedback", feedback);
 
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        HttpEntity<Map<String, Object>> requestEntity = new HttpEntity<>(requestBody, headers);
+
         try {
-            ResponseEntity<String> flaskResponse = restTemplate.postForEntity(flaskUrl, requestBody, String.class);
+            // Flask 서버와의 통신 (POST 요청)
+            ResponseEntity<Map> response = restTemplate.exchange(flaskUrl, HttpMethod.POST, requestEntity, Map.class);
+            Map<String, Object> result = response.getBody();
 
+            // glasses_id 값 저장 (최대 5개까지 받음)
+            if (result != null && result.containsKey("glasses_id") && result.get("glasses_id") instanceof List) {
+                List<Long> glassesIds = (List<Long>) result.get("glasses_id");  // glassesId가 Long으로 넘어옴
+                if (glassesIds.size() > 5) {
+                    glassesIds = glassesIds.subList(0, 5); // 최대 5개만 받기
+                }
 
-                return ResponseEntity.status(HttpStatus.CREATED)
-                        .body(new Response<>("성공", "피드백 저장 및 Flask 서버 전송 성공", null));
+                // 기존 추천 안경 삭제
+                glassesRecommendRepository.deleteByUser(user);
 
+                // 새로운 GlassesRecommend 엔티티 리스트 생성
+                List<GlassesRecommend> glassesRecommendList = new ArrayList<>();
+                for (Long glassesId : glassesIds) {
+                    Optional<Glasses> glassesOptional = glassesRepository.findById(glassesId); // glassesId로 Glasses 엔티티 찾기
+                    if (glassesOptional.isPresent()) {
+                        Glasses glasses = glassesOptional.get();
+                        GlassesRecommend glassesRecommend = GlassesRecommend.builder()
+                                .user(user)
+                                .glasses(glasses) // Glasses 엔티티 연결
+                                .build();
+
+                        glassesRecommendList.add(glassesRecommend);
+                    }
+                }
+
+                // GlassesRecommend 리스트를 DB에 저장
+                glassesRecommendRepository.saveAll(glassesRecommendList); // saveAll을 사용하여 여러 엔티티를 한 번에 저장
+            } else {
+                throw new IllegalArgumentException("Flask 서버에서 유효한 안경 데이터를 받지 못했습니다.");
+            }
+
+            // 성공 응답 반환
+            return ResponseEntity.status(HttpStatus.CREATED)
+                    .body(new Response<>("성공", "피드백 저장 및 Flask 서버 전송 성공", null));
         } catch (Exception e) {
+            // 오류 발생 시 적절한 응답 반환
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(new Response<>("부분 성공", "Flask 서버 통신 실패. 데이터베이스에는 저장됨" + e.getMessage(), null));
+                    .body(new Response<>("부분 성공", "Flask 서버 통신 실패. 데이터베이스에는 저장됨. 오류: " + e.getMessage(), null));
         }
     }
+
+
 
     @Transactional
     public ResponseEntity<Response<User>> findUser(Long userId) {

@@ -2,6 +2,7 @@ package com.maumai.glasses.kiosk.service;
 
 import com.maumai.glasses.kiosk.entity.Glasses;
 import com.maumai.glasses.kiosk.entity.User;
+import com.maumai.glasses.kiosk.repository.GlassesRecommendRepository;
 import com.maumai.glasses.kiosk.repository.GlassesRepository;
 import com.maumai.glasses.kiosk.repository.UserRepository;
 import com.maumai.glasses.kiosk.response.Response;
@@ -20,7 +21,7 @@ public class GlassesService {
 
     private final GlassesRepository glassesRepository;
     private final UserRepository userRepository;
-
+    private final GlassesRecommendRepository glassesRecommendRepository;
 
 
     @Transactional
@@ -28,7 +29,7 @@ public class GlassesService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자입니다. ID: " + userId));
 
-        List<Glasses> glassesList = glassesRepository.findByUser(user)
+        List<Glasses> glassesList = glassesRecommendRepository.findByUser(user)
                 .stream()
                 .map(GlassesRecommend::getGlasses) // 조인 테이블의 getGlasses 메서드를 통해 참조
                 .collect(Collectors.toList());

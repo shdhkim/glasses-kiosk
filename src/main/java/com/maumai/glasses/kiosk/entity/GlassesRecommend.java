@@ -3,8 +3,13 @@ package com.maumai.glasses.kiosk.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
-@Data
+
+@NoArgsConstructor
+@AllArgsConstructor
 @Entity
+@Getter
+@Setter
+@Builder
 public class GlassesRecommend {
 
     @Id
