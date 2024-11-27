@@ -1,15 +1,11 @@
 server:
-  port: 8443  # HTTPS를 위한 포트 설정
+  port: 8080  # HTTP를 위한 포트 설정
   servlet:
     context-path: /
     encoding:
       charset: utf-8
       enabled: true
       force: true
-  ssl:  # HTTPS 설정 추가
-    key-store: /etc/ssl/keystore.p12  # keystore.p12 파일의 절대 경로
-    key-store-password: kiosk  # keystore.p12 생성 시 설정한 비밀번호
-    key-store-type: PKCS12  # 키스토어 타입
 
 spring:
   datasource:
