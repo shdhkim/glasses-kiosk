@@ -101,11 +101,32 @@ public class UserService {
 
                 // glasses_id 값 저장 (최대 5개까지 받음)
                 if (result.containsKey("glasses_id") && result.get("glasses_id") instanceof List) {
-                    List<Long> glassesIds = (List<Long>) result.get("glasses_id");  // glassesId가 Long으로 넘어옴
+                    // glasses_id 데이터를 안전하게 Long으로 변환
+                    List<?> glassesIdObjects = (List<?>) result.get("glasses_id");
+                    List<Long> glassesIds = new ArrayList<>();
+
+                    for (Object obj : glassesIdObjects) {
+                        try {
+                            // Integer 또는 다른 숫자 형식을 Long으로 변환
+                            if (obj instanceof Number) {
+                                glassesIds.add(((Number) obj).longValue());
+                            } else if (obj instanceof String) {
+                                glassesIds.add(Long.parseLong((String) obj));
+                            } else {
+                                throw new IllegalArgumentException("glasses_id 데이터가 Long으로 변환 불가: " + obj);
+                            }
+                        } catch (Exception e) {
+                            // 변환 실패 시 로그 출력
+                            System.err.println("glasses_id 변환 실패: " + obj + ", 에러: " + e.getMessage());
+                        }
+                    }
+
+                    // 최대 5개로 제한
                     if (glassesIds.size() > 5) {
                         glassesIds = glassesIds.subList(0, 5); // 최대 5개만 받기
                     }
 
+                    // 이후 로직
                     // GlassesRecommend 엔티티로 변환하여 저장
                     List<GlassesRecommend> glassesRecommendList = new ArrayList<>();
                     for (Long glassesId : glassesIds) {
@@ -122,7 +143,8 @@ public class UserService {
                     }
 
                     // GlassesRecommend 리스트를 User 객체에 설정
-                    user.setGlassesRecommendList(glassesRecommendList);
+                    user.getGlassesRecommendList().clear();
+                    user.getGlassesRecommendList().addAll(glassesRecommendList);
                 }
 
                 userRepository.save(user); // 최종적으로 업데이트된 User 객체를 DB에 저장

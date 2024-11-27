@@ -1,6 +1,7 @@
 package com.maumai.glasses.kiosk.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.maumai.glasses.kiosk.role.UserRole;
 import jakarta.persistence.*;
 import lombok.*;
@@ -27,6 +28,7 @@ public class User {
     private String personalColor;
 
     @Lob
+    @JsonIgnore
     @Column(columnDefinition = "MEDIUMBLOB")
     private byte[] userImage;
     @Lob
@@ -42,8 +44,8 @@ public class User {
     private String glassesColor;
 
     private UserRole role; // USER
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonIgnore
-    private List<GlassesRecommend> glassesRecommendList = new ArrayList<>();
 
+    @JsonManagedReference
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<GlassesRecommend> glassesRecommendList = new ArrayList<>();
 }

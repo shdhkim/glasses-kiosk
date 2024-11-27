@@ -1,6 +1,7 @@
 package com.maumai.glasses.kiosk.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -36,7 +37,6 @@ public class Glasses {
     @Column
     private String color;
 
-    @Column
     private Double width;
 
     @Column
@@ -45,7 +45,7 @@ public class Glasses {
     @Column
     private Double weight;
 
+    @JsonManagedReference
     @OneToMany(mappedBy = "glasses", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonIgnore
     private List<GlassesRecommend> glassesRecommendList = new ArrayList<>();
 }
