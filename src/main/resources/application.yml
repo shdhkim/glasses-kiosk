@@ -1,11 +1,16 @@
 server:
-  port: 8080
+  port: 8443  # HTTPS를 위한 포트 설정
   servlet:
     context-path: /
     encoding:
       charset: utf-8
       enabled: true
       force: true
+  ssl:  # HTTPS 설정 추가
+    key-store: /etc/ssl/keystore.p12  # keystore.p12 파일의 절대 경로
+    key-store-password: kiosk  # keystore.p12 생성 시 설정한 비밀번호
+    key-store-type: PKCS12  # 키스토어 타입
+
 spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
@@ -15,12 +20,12 @@ spring:
   thymeleaf:
     cache: false
   jpa:
-   hibernate:
-     ddl-auto: update
-   properties:
-     hibernate:
-       format_sql: true
-       show_sql: true
-       highlight_sql: true
-   database-platform: org.hibernate.dialect.MySQLDialect
-   defer-datasource-initialization: true
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        format_sql: true
+        show_sql: true
+        highlight_sql: true
+    database-platform: org.hibernate.dialect.MySQLDialect
+    defer-datasource-initialization: true
