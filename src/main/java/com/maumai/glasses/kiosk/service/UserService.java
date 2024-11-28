@@ -213,37 +213,44 @@ public class UserService {
         try {
             // Flask 서버와의 통신 (POST 요청)
             ResponseEntity<Map> response = restTemplate.postForEntity(flaskUrl, requestEntity, Map.class);
-//            ResponseEntity<Map> response = restTemplate.exchange(flaskUrl, HttpMethod.POST, requestEntity, Map.class);
+            // Flask 서버 응답을 Map으로 변환
             Map<String, Object> result = response.getBody();
-
             System.out.printf("####################"+result);
             // glasses_id 값 저장 (최대 5개까지 받음)
-            if (result != null && result.containsKey("glasses_id") && result.get("glasses_id") instanceof List) {
-                List<Long> glassesIds = (List<Long>) result.get("glasses_id");  // glassesId가 Long으로 넘어옴
-                if (glassesIds.size() > 5) {
-                    glassesIds = glassesIds.subList(0, 5); // 최대 5개만 받기
-                }
 
-                // 기존 추천 안경 삭제
-                glassesRecommendRepository.deleteByUser(user);
+            if (result != null && result.containsKey("glasses_id")) {
+                Object glassesIdObject = result.get("glasses_id");
+                if (glassesIdObject instanceof List) {
+                    @SuppressWarnings("unchecked") // 안전하게 List로 캐스팅
+                    List<Integer> glassesIds = (List<Integer>) glassesIdObject;
 
-                // 새로운 GlassesRecommend 엔티티 리스트 생성
-                List<GlassesRecommend> glassesRecommendList = new ArrayList<>();
-                for (Long glassesId : glassesIds) {
-                    Optional<Glasses> glassesOptional = glassesRepository.findById(glassesId); // glassesId로 Glasses 엔티티 찾기
-                    if (glassesOptional.isPresent()) {
-                        Glasses glasses = glassesOptional.get();
-                        GlassesRecommend glassesRecommend = GlassesRecommend.builder()
-                                .user(user)
-                                .glasses(glasses) // Glasses 엔티티 연결
-                                .build();
-
-                        glassesRecommendList.add(glassesRecommend);
+                    // 최대 5개만 처리
+                    if (glassesIds.size() > 5) {
+                        glassesIds = glassesIds.subList(0, 5);
                     }
-                }
 
-                // GlassesRecommend 리스트를 DB에 저장
-                glassesRecommendRepository.saveAll(glassesRecommendList); // saveAll을 사용하여 여러 엔티티를 한 번에 저장
+                    // 기존 추천 안경 삭제
+                    glassesRecommendRepository.deleteByUser(user);
+
+                    // 새로운 GlassesRecommend 엔티티 리스트 생성
+                    List<GlassesRecommend> glassesRecommendList = new ArrayList<>();
+                    for (Integer glassesId : glassesIds) {
+                        Optional<Glasses> glassesOptional = glassesRepository.findById(glassesId.longValue()); // glassesId를 Long으로 변환
+                        if (glassesOptional.isPresent()) {
+                            Glasses glasses = glassesOptional.get();
+                            GlassesRecommend glassesRecommend = GlassesRecommend.builder()
+                                    .user(user)
+                                    .glasses(glasses) // Glasses 엔티티 연결
+                                    .build();
+
+                            glassesRecommendList.add(glassesRecommend);
+                        }
+                    }
+                    // GlassesRecommend 리스트를 DB에 저장
+                    glassesRecommendRepository.saveAll(glassesRecommendList); // saveAll을 사용하여 여러 엔티티를 한 번에 저장
+
+
+                }
             } else {
                 throw new IllegalArgumentException("Flask 서버에서 유효한 안경 데이터를 받지 못했습니다.");
             }
