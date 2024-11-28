@@ -262,10 +262,19 @@ public class UserService {
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자입니다. ID: " + userId));
 
         try {
+            // 최신 안경 경로 가져오기
+            GlassesRecommend latestGlassesRecommend = glassesRecommendRepository.findTopByUserOrderByIdDesc(user)
+                    .orElseThrow(() -> new IllegalArgumentException("해당 사용자의 안경 추천 기록이 없습니다."));
+
+            String latestGlassesPath = latestGlassesRecommend.getGlasses().getImage_path_edited();
+            if (latestGlassesPath == null || latestGlassesPath.isEmpty()) {
+                throw new IllegalArgumentException("최신 안경 경로가 없습니다.");
+            }
+
             // 이미지 압축 해제
             byte[] decompressedImage = ImageUtils.decompressImage(user.getUserImage());
 
-            // Flask 서버로 이미지 전송
+            // Flask 서버로 이미지와 안경 경로 전송
             String flaskUrl = "http://127.0.0.1:5000/process-image";
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.MULTIPART_FORM_DATA);
@@ -273,20 +282,21 @@ public class UserService {
             ByteArrayResource byteArrayResource = new ByteArrayResource(decompressedImage) {
                 @Override
                 public String getFilename() {
-                    return "user_image.jpg"; // 파일 이름 설정
+                    return "user_image.jpg";
                 }
             };
 
+            // 최신 안경 경로를 함께 전송
             MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
-
             body.add("image", byteArrayResource);
+            body.add("glasses_path_edited", latestGlassesPath); // 최신 안경 경로 추가
 
             HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(body, headers);
 
             // Flask 서버로 요청 전송 및 응답 수신
             ResponseEntity<Map> flaskResponse = restTemplate.exchange(flaskUrl, HttpMethod.POST, requestEntity, Map.class);
 
-            // Flask에서 받은 Base64 인코딩된 이미지
+            // Flask에서 받은 응답 처리
             Map<String, Object> responseBody = flaskResponse.getBody();
             if (responseBody != null && responseBody.containsKey("image")) {
                 String base64EncodedImage = (String) responseBody.get("image");
@@ -297,10 +307,11 @@ public class UserService {
                 user.setMixImage(compressedMixImage);
                 userRepository.save(user);
 
-                // 성공 응답 반환 (Base64 인코딩된 이미지 포함)
+                // 성공 응답 반환
                 return ResponseEntity.status(HttpStatus.CREATED)
                         .body(new Response<>("성공", "이미지를 성공적으로 Flask 서버에 전송하고 응답을 처리했습니다.", base64EncodedImage));
             }
+
             return ResponseEntity.status(HttpStatus.OK)
                     .body(new Response<>("성공", "이미지를 성공적으로 Flask 서버에 전송하고 응답을 처리했습니다.", null));
         } catch (Exception e) {

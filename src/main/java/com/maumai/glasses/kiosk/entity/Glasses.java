@@ -20,6 +20,9 @@ public class Glasses {
     private String image_path;
 
     @Column
+    private String image_path_edited;
+
+    @Column
     private String model;
 
     @Column
@@ -48,4 +51,6 @@ public class Glasses {
     @JsonManagedReference
     @OneToMany(mappedBy = "glasses", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<GlassesRecommend> glassesRecommendList = new ArrayList<>();
+
+
 }
