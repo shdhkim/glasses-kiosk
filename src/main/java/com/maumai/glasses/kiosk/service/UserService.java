@@ -20,6 +20,7 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import java.io.IOException;
 import java.util.*;
@@ -190,23 +191,32 @@ public class UserService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자입니다. ID: " + userId));
         user.setFeedBack(feedback);
+        String personal_color = user.getPersonalColor();
+        String face_shape = user.getFaceShape();
         userRepository.save(user); // DB에 피드백 업데이트
 
         // Flask 서버로 피드백 전송
         String flaskUrl = "http://localhost:5000/feedback";
-        Map<String, Object> requestBody = new HashMap<>();
-        requestBody.put("userId", userId);
-        requestBody.put("feedback", feedback);
+
+        Map<String, String> params = new HashMap<>();
+        params.put("feedback", feedback);
+        params.put("face_shape", face_shape);
+        params.put("personal_color", personal_color);
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
-        HttpEntity<Map<String, Object>> requestEntity = new HttpEntity<>(requestBody, headers);
+
+        // 요청 본문 생성
+        HttpEntity<Map<String, String>> requestEntity = new HttpEntity<>(params, headers);
+
 
         try {
             // Flask 서버와의 통신 (POST 요청)
-            ResponseEntity<Map> response = restTemplate.exchange(flaskUrl, HttpMethod.POST, requestEntity, Map.class);
+            ResponseEntity<Map> response = restTemplate.postForEntity(flaskUrl, requestEntity, Map.class);
+//            ResponseEntity<Map> response = restTemplate.exchange(flaskUrl, HttpMethod.POST, requestEntity, Map.class);
             Map<String, Object> result = response.getBody();
 
+            System.out.printf("####################"+result);
             // glasses_id 값 저장 (최대 5개까지 받음)
             if (result != null && result.containsKey("glasses_id") && result.get("glasses_id") instanceof List) {
                 List<Long> glassesIds = (List<Long>) result.get("glasses_id");  // glassesId가 Long으로 넘어옴
