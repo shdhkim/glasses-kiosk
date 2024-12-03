@@ -14,6 +14,8 @@ public interface GlassesRecommendRepository extends JpaRepository<GlassesRecomme
 
     void deleteByUser(User user); // 사용자로 추천 안경을 삭제하는 메서드
 
-    @Query("SELECT gr FROM GlassesRecommend gr WHERE gr.user = :user ORDER BY gr.id DESC")
-    Optional<GlassesRecommend> findTopByUserOrderByIdDesc(@Param("user") User user);
+
+    Optional<GlassesRecommend> findTopByUserOrderByIdDesc(User user);
+
+    List<GlassesRecommend> findAllByUser(User user);
 }

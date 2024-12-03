@@ -31,9 +31,7 @@ public class User {
     @JsonIgnore
     @Column(columnDefinition = "MEDIUMBLOB")
     private byte[] userImage;
-    @Lob
-    @Column(columnDefinition = "MEDIUMBLOB")
-    private byte[] mixImage;
+
     @Column
     private String feedBack;
 

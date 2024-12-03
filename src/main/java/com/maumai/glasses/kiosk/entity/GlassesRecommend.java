@@ -26,6 +26,8 @@ public class GlassesRecommend {
     @JsonBackReference
     @JoinColumn(name = "glasses_id", nullable = false)
     private Glasses glasses;
-
+    @Lob
+    @Column(columnDefinition = "MEDIUMBLOB")
+    private byte[] mixImage;
 
 }

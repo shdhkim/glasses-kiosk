@@ -34,7 +34,7 @@ public class UserController {
     }
     @Operation(summary = "합성 이미지 리턴", description = "Flask 서버를 이용해 사용자의 이미지를 처리해서 얻은 결과를 반환한다.")
     @GetMapping("/image/send/{userId}")
-    public ResponseEntity<Response<String>> imageSend(@PathVariable("userId") Long userId) {
+    public ResponseEntity<Response<List<String>>> imageSend(@PathVariable("userId") Long userId) {
         return userService.send(userId);
     }
     @Operation(summary = "유저 정보 전체 조회", description = "유저의 정보를 조회한다.")

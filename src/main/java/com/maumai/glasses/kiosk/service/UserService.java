@@ -20,10 +20,9 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.util.UriComponentsBuilder;
-
 import java.io.IOException;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 
 @Service
 @RequiredArgsConstructor
@@ -146,6 +145,14 @@ public class UserService {
                     // GlassesRecommend 리스트를 User 객체에 설정
                     user.getGlassesRecommendList().clear();
                     user.getGlassesRecommendList().addAll(glassesRecommendList);
+                    // 최신 GlassesRecommend에서 glassesColor와 glassesFrame 설정
+                    if (!glassesRecommendList.isEmpty()) {
+                        Glasses latestGlasses = glassesRecommendList.get(glassesRecommendList.size() - 1).getGlasses();
+                        if (latestGlasses != null) {
+                            user.setGlassesColor(latestGlasses.getColor());
+                            user.setGlassesFrame(latestGlasses.getShape());
+                        }
+                    }
                 }
 
                 userRepository.save(user); // 최종적으로 업데이트된 User 객체를 DB에 저장
@@ -263,79 +270,107 @@ public class UserService {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(new Response<>("부분 성공", "Flask 서버 통신 실패. 데이터베이스에는 저장됨. 오류: " + e.getMessage(), null));
         }
-    }
-
-
-
-    @Transactional
-    public ResponseEntity<Response<User>> findUser(Long userId) {
-        User user = findUserById(userId);
-        return ResponseEntity.ok(new Response<>("true", "유저 조회 성공", user));
-    }
-    @Transactional
-    public ResponseEntity<Response<String>> send(Long userId) {
-        // 사용자 조회
+    }public ResponseEntity<Response<List<String>>> send(Long userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자입니다. ID: " + userId));
 
         try {
-            // 최신 안경 경로 가져오기
-            GlassesRecommend latestGlassesRecommend = glassesRecommendRepository.findTopByUserOrderByIdDesc(user)
-                    .orElseThrow(() -> new IllegalArgumentException("해당 사용자의 안경 추천 기록이 없습니다."));
-
-            String latestGlassesPath = latestGlassesRecommend.getGlasses().getImage_path_edited();
-            if (latestGlassesPath == null || latestGlassesPath.isEmpty()) {
-                throw new IllegalArgumentException("최신 안경 경로가 없습니다.");
+            // 1. 추천 안경 기록 가져오기
+            List<GlassesRecommend> glassesRecommendList = glassesRecommendRepository.findAllByUser(user);
+            if (glassesRecommendList.isEmpty()) {
+                throw new IllegalArgumentException("해당 사용자의 안경 추천 기록이 없습니다.");
             }
 
-            // 이미지 압축 해제
-            byte[] decompressedImage = ImageUtils.decompressImage(user.getUserImage());
-
-            // Flask 서버로 이미지와 안경 경로 전송
-            String flaskUrl = "http://127.0.0.1:5000/process-image";
+            // 2. 이미지 처리 준비
+            RestTemplate restTemplate = new RestTemplate();
+            MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.MULTIPART_FORM_DATA);
 
-            ByteArrayResource byteArrayResource = new ByteArrayResource(decompressedImage) {
+            // 사용자 이미지 압축 해제 및 추가
+            byte[] decompressedImage = ImageUtils.decompressImage(user.getUserImage());
+            if (decompressedImage == null || decompressedImage.length == 0) {
+                throw new IllegalArgumentException("사용자 이미지가 비어 있습니다.");
+            }
+
+            ByteArrayResource userImageResource = new ByteArrayResource(decompressedImage) {
                 @Override
                 public String getFilename() {
                     return "user_image.jpg";
                 }
             };
+            body.add("user_image", userImageResource);
 
-            // 최신 안경 경로를 함께 전송
-            MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
-            body.add("image", byteArrayResource);
-            body.add("glasses_path_edited", latestGlassesPath); // 최신 안경 경로 추가
+            // 3. 안경 이미지 처리 및 유효성 검사
+            AtomicInteger validImageCount = new AtomicInteger(0);
 
+            for (GlassesRecommend recommend : glassesRecommendList) {
+                String imagePath = recommend.getGlasses().getImage_path_edited();
+
+                if (imagePath == null || imagePath.isEmpty()) {
+                    continue; // 이미지 경로가 없는 경우 건너뜁니다.
+                }
+
+                try {
+                    byte[] glassesImageBytes = restTemplate.getForObject(imagePath, byte[].class);
+                    if (glassesImageBytes != null) {
+                        ByteArrayResource glassesImageResource = new ByteArrayResource(glassesImageBytes) {
+                            private final int resourceIndex = validImageCount.incrementAndGet();
+
+                            @Override
+                            public String getFilename() {
+                                return "glasses_image_" + resourceIndex + ".png";
+                            }
+                        };
+                        body.add("glasses_image_" + validImageCount.get(), glassesImageResource);
+                    }
+                } catch (Exception e) {
+                    System.err.println("안경 이미지 다운로드 중 오류 발생: " + e.getMessage());
+                }
+            }
+
+            if (validImageCount.get() == 0) {
+                throw new IllegalArgumentException("유효한 안경 이미지가 없습니다.");
+            }
+
+            // 4. Flask 서버로 전송
+            String flaskUrl = "http://localhost:5000/process_images";
             HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(body, headers);
 
-            // Flask 서버로 요청 전송 및 응답 수신
             ResponseEntity<Map> flaskResponse = restTemplate.exchange(flaskUrl, HttpMethod.POST, requestEntity, Map.class);
 
-            // Flask에서 받은 응답 처리
+            // 5. Flask 응답 처리
             Map<String, Object> responseBody = flaskResponse.getBody();
-            if (responseBody != null && responseBody.containsKey("image")) {
-                String base64EncodedImage = (String) responseBody.get("image");
+            if (responseBody != null && responseBody.containsKey("images")) {
+                List<String> base64EncodedImages = (List<String>) responseBody.get("images");
 
-                // DB 저장
-                byte[] receivedImage = Base64.getDecoder().decode(base64EncodedImage);
-                byte[] compressedMixImage = ImageUtils.compressImage(receivedImage);
-                user.setMixImage(compressedMixImage);
-                userRepository.save(user);
+                // 결과 저장
+                for (int i = 0; i < base64EncodedImages.size(); i++) {
+                    String base64Image = base64EncodedImages.get(i);
+                    GlassesRecommend recommend = glassesRecommendList.get(i);
+                    byte[] mixImage = Base64.getDecoder().decode(base64Image);
+                    recommend.setMixImage(ImageUtils.compressImage(mixImage));
+                    glassesRecommendRepository.save(recommend);
+                }
 
-                // 성공 응답 반환
                 return ResponseEntity.status(HttpStatus.CREATED)
-                        .body(new Response<>("성공", "이미지를 성공적으로 Flask 서버에 전송하고 응답을 처리했습니다.", base64EncodedImage));
+                        .body(new Response<>("성공", "플라스크 서버에서 이미지 합성이 완료되었습니다.", base64EncodedImages));
             }
 
             return ResponseEntity.status(HttpStatus.OK)
-                    .body(new Response<>("성공", "이미지를 성공적으로 Flask 서버에 전송하고 응답을 처리했습니다.", null));
+                    .body(new Response<>("성공", "플라스크 서버에서 이미지를 처리했지만 응답에 이미지가 없습니다.", null));
+
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(new Response<>("실패", "Flask 서버 통신 실패: " + e.getMessage(), null));
         }
     }
+    @Transactional
+    public ResponseEntity<Response<User>> findUser(Long userId) {
+        User user = findUserById(userId);
+        return ResponseEntity.ok(new Response<>("true", "유저 조회 성공", user));
+    }
+
     private User findUserById(Long userId) {
         return userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자입니다. ID: " + userId));
