@@ -1,7 +1,7 @@
 <h1>2024-2 SW온캠퍼스인턴쉽 5팀 B조</h1>
 </p>
-<h1 align="middle">AI 안경 키오스크 앱 개발</h1>
-<h3 align="middle">얼굴형과 퍼스널 컬러에 따른 안경 추천 앱</h3>
+<h1>AI 안경 키오스크 앱 개발</h1>
+<h3>얼굴형과 퍼스널 컬러에 따른 안경 추천 앱</h3>
 
 ![온캠퍼스인턴쉽 포스터사진](https://github.com/user-attachments/assets/61f6829a-9427-46c5-8526-ed9cd8141f33)
 
@@ -11,7 +11,7 @@
 
 |팀장|팀원|팀원|팀원|팀원|            
 | :---: | :---: | :---: | :---: | :---: | 
-|<img src="https://github.com/user-attachments/assets/c98b8b07-0476-4163-bee1-1b83a91f9a54" width="200" height="200"/>|<img src="https://github.com/user-attachments/assets/3cdccdad-64dd-48ca-b2f1-2491c238fec6" width="200" height="200"/>|<img src="https://github.com/user-attachments/assets/85392a15-65d6-4560-8cb7-443058c31fca" width="200" height="200"/>|<img src="https://github.com/user-attachments/assets/d0214ae1-b903-411e-974c-190afc63084c" width="200" height="200"/>|<img src="https://github.com/user-attachments/assets/3a0a5b76-7636-4596-b59f-4591d18d290e" width="200" height="200"/>|  
+|<img src="https://github.com/user-attachments/assets/c98b8b07-0476-4163-bee1-1b83a91f9a54" width="200" height="200"/>|<img src="https://github.com/user-attachments/assets/3cdccdad-64dd-48ca-b2f1-2491c238fec6" width="200" height="200"/>|<img src="https://github.com/user-attachments/assets/85392a15-65d6-4560-8cb7-443058c31fca" width="100" height="100"/>|<img src="https://github.com/user-attachments/assets/d0214ae1-b903-411e-974c-190afc63084c" width="200" height="200"/>|<img src="https://github.com/user-attachments/assets/3a0a5b76-7636-4596-b59f-4591d18d290e" width="200" height="200"/>|  
 |[이찬희](https://github.com/llleeco)|[신경환](https://github.com/shinkyounghwan)|[김상헌](https://github.com/shdhkim)|[이지연](https://github.com/ljy6712)|[최리준](https://github.com/88nnn)| 
 
 ## 📝 작품소개
