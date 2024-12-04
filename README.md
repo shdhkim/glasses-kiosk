@@ -53,13 +53,20 @@
 
 <br/>
 
+## 📑 API 명세서
+![image](https://github.com/user-attachments/assets/60c37f73-44b9-4f40-a393-1e3635c06a62)
+
+<br/>
+
 ## 🔧 기술 스택
 
 **Frontend**
 
 ![JavaScript](https://img.shields.io/badge/javascript-%23323330.svg?style=for-the-badge&logo=javascript&logoColor=%23F7DF1E)
+![NodeJS](https://img.shields.io/badge/node.js-6DA55F?style=for-the-badge&logo=node.js&logoColor=white)
 ![HTML5](https://img.shields.io/badge/html5-%23E34F26.svg?style=for-the-badge&logo=html5&logoColor=white)
-<img src="https://img.shields.io/badge/css-1572B6?style=for-the-badge&logo=css3&logoColor=white">
+![css](https://img.shields.io/badge/css-1572B6?style=for-the-badge&logo=css3&logoColor=white)
+![Visual Studio Code](https://img.shields.io/badge/Visual%20Studio%20Code-0078d7.svg?style=for-the-badge&logo=visual-studio-code&logoColor=white)
 ![React](https://img.shields.io/badge/react-%2320232a.svg?style=for-the-badge&logo=react&logoColor=%2361DAFB)
 ![Figma](https://img.shields.io/badge/figma-%23F24E1E.svg?style=for-the-badge&logo=figma&logoColor=white)
 ![AWS](https://img.shields.io/badge/AWS-%23FF9900.svg?style=for-the-badge&logo=amazon-aws&logoColor=white)
@@ -72,13 +79,12 @@
 ![IntelliJ IDEA](https://img.shields.io/badge/IntelliJIDEA-000000.svg?style=for-the-badge&logo=intellij-idea&logoColor=white)
 ![springboot](https://img.shields.io/badge/springboot-6DB33F?style=for-the-badge&logo=springboot&logoColor=white)
 ![mysql](https://img.shields.io/badge/mysql-4479A1?style=for-the-badge&logo=mysql&logoColor=white)
+![Postman](https://img.shields.io/badge/Postman-FF6C37?style=for-the-badge&logo=postman&logoColor=white)
 ![AWS](https://img.shields.io/badge/AWS-%23FF9900.svg?style=for-the-badge&logo=amazon-aws&logoColor=white)
 
 <br />
 
 **Backend-AI**
-
-<br/>
 
 ![Python](https://img.shields.io/badge/python-3670A0?style=for-the-badge&logo=python&logoColor=ffdd54)
 ![Visual Studio Code](https://img.shields.io/badge/Visual%20Studio%20Code-0078d7.svg?style=for-the-badge&logo=visual-studio-code&logoColor=white)
@@ -87,9 +93,15 @@
 ![ChatGPT](https://img.shields.io/badge/chatGPT-74aa9c?style=for-the-badge&logo=openai&logoColor=white)
 ![AWS](https://img.shields.io/badge/AWS-%23FF9900.svg?style=for-the-badge&logo=amazon-aws&logoColor=white)
 ![Docker](https://img.shields.io/badge/docker-%230db7ed.svg?style=for-the-badge&logo=docker&logoColor=white)
-![milvus](https://img.shields.io/badge/milvus-%00A1EA.svg?style=for-the-badge&logo=milvus&logoColor=white)
+![milvus](https://img.shields.io/badge/milvus-00A1EA?style=for-the-badge&logo=milvus&logoColor=white)
 
+<br/>
 
+**소통**
+
+![Notion](https://img.shields.io/badge/Notion-%23000000.svg?style=for-the-badge&logo=notion&logoColor=white)
+![Discord](https://img.shields.io/badge/Discord-%235865F2.svg?style=for-the-badge&logo=discord&logoColor=white)
+![Zoom](https://img.shields.io/badge/Zoom-2D8CFF?style=for-the-badge&logo=zoom&logoColor=white)
 
 ## 💡 기대효과
 
@@ -100,15 +112,4 @@
 **매장 체류 시간 단축**: 안경에 대한 빠른 선택으로 고객 회전율이 증가된다.
 
 **데이터 축적 및 활용**: 고객 선호 데이터를 활용하여 상품 기획을 최적화 할 수 있다.
-
-<br/>
-
-## 👍 활용분야
-
-**편의성**: 학생과 취업준비생이 문서 형식에 구애받지 않고 손쉽게 포트폴리오 제작이 가능하다.
-
-**확장성**: 학생과 취업준비생 뿐만 아니라 기업 등의 고유 양식으로도 제공하여 다양한 분야에 활용할 수 있다.
-
-**수익성**: 사용자가 자신의 디자인을 판매해 수익을 창출할 수 있고 운영자는 판매 수수료를 통하여 수익 창출이 가능하다.
-
-**획일화된 양식**: 제출물을 하나의 디자인 양식으로 관리하여 자료를 분류 및 보관하는데 용이하다.                       
+                       
