@@ -2,15 +2,18 @@
 </p>
 <h1 align="middle">AI 안경 키오스크 앱 개발</h1>
 <h3 align="middle">얼굴형과 퍼스널 컬러에 따른 안경 추천 앱</h3>
-![SW온캠퍼스인턴쉽_포스터_5팀B조_이찬희](https://github.com/user-attachments/assets/ca98e0f9-bdaa-4508-8137-07dddd96b866)
-
 <br/>
 
 ## 🙋‍♂️ 팀원소개
 
 |팀장|팀원|팀원|팀원|팀원|            
 | :---: | :---: | :---: | :---: | :---: | 
-|  |  |  |  |  |  
+|![찬희](https://github.com/user-attachments/assets/c98b8b07-0476-4163-bee1-1b83a91f9a54)
+ |![신경환](https://github.com/user-attachments/assets/3cdccdad-64dd-48ca-b2f1-2491c238fec6)
+  |![김상헌](https://github.com/user-attachments/assets/85392a15-65d6-4560-8cb7-443058c31fca)
+  |![지연](https://github.com/user-attachments/assets/d0214ae1-b903-411e-974c-190afc63084c)
+  |![최리준](https://github.com/user-attachments/assets/3a0a5b76-7636-4596-b59f-4591d18d290e)
+  |  
 |[이찬희](https://github.com/llleeco)|[신경환](https://github.com/shinkyounghwan)|[김상헌](https://github.com/shdhkim)|[이지연](https://github.com/ljy6712)|[최리준](https://github.com/88nnn)| 
 
 ## 📝 작품소개
@@ -26,20 +29,9 @@
 실제로 매장에서 모든 안경을 착용해 보는 데는 한계가 있으며, 특히 대형 매장에서는 가격대별, 브랜드별로 나뉜 제품들을 선택하기 어려운 경우가 많습니다.
 저희는 이러한 소비자의 어려움을 해소하고, 맞춤형 추천 서비스를 통해 소비자의 만족도를 높이고자 이 애플리케이션을 개발하게 되었습니다.
 
-|서비스명|플랫폼 유형|특징|단점|
-|---|---|---|---|
-|아임 웹(Imweb)|WEB|개발에 전문적인 지식이 없어도 디자인 블록을 활용하여 웹사이트를 만들 수 있음.|웹사이트 개발에 맞추어져 있어 문서를 만드는 것에는 불필요.|
-|파워포인트 / 워드|WEB / EXE|다양한 문서를 만들 수 있는 기능을 제공.|작성할 수 있는 디자인 기능이 방대하여, 디자인에 어려움을 느끼는 학생들이 접근하기 어려움.|
-|잡코리아|WEB|취업에 알맞은 자소서를 작성할 수 있게 양식 제공.|취업에 특화된 웹사이트로 자기소개서 양식만을 제공.|
-|구글 문서|WEB|실시간으로 다수의 사용자와 수정 및 작성 가능.|제공되는 양식 및 디자인 도구가 매우 부족.|
-
-따라서 이 문제를 해결하기 위해 누구나 손쉽게 접근하여 자신만의 포트폴리오를 작성하는 웹 서비스를 제공하고자 합니다.  
-단순하게 포트폴리오를 만드는 기능뿐만 아니라 학과별 포트폴리오 양식을 제공하여 취업을 준비하고 있는 학생들에게 포트폴리오 작성의 애로사항을 줄여 줄 수 있을 것입니다.
-
 <br/>
 
-## 🎞 Demo
-[리드미 시연영상보기](https://www.youtube.com/watch?v=X-rooURijag)
+## 🎞 시연영상
 
 <br/>
 
@@ -85,7 +77,7 @@
 
 ## 🔧 Stack
 
-**Frontend(Web)**
+**Frontend**
 - **Language** : JavaScript, TypeScript
 - **Library & Framework** : React, Styled-Components, Axios, Recoil, React-Quill, React-Rnd, React-To-Pdf
 - **Deploy**: AWS(S3)
@@ -94,9 +86,10 @@
 **Backend**
 - **Language** : Java 
 - **Library & Framework** : Spring Boot
-- **Database** : MySQLDB
+- **Database** : MySQL
 - **ORM** : JPA
-- **Deploy**: AWS(EC2, RDS), Firebase(Storage)
+- **Deploy**: AWS(EC2, RDS),
+**AI**
 
 <br/>
 
