@@ -8,7 +8,7 @@
 
 |팀장|팀원|팀원|팀원|팀원|            
 | :---: | :---: | :---: | :---: | :---: | 
-|![찬희](https://github.com/user-attachments/assets/c98b8b07-0476-4163-bee1-1b83a91f9a54)
+|<img src="https://github.com/user-attachments/assets/c98b8b07-0476-4163-bee1-1b83a91f9a54" width="200" height="200"/>)
  |![신경환](https://github.com/user-attachments/assets/3cdccdad-64dd-48ca-b2f1-2491c238fec6)
   |![김상헌](https://github.com/user-attachments/assets/85392a15-65d6-4560-8cb7-443058c31fca)
   |![지연](https://github.com/user-attachments/assets/d0214ae1-b903-411e-974c-190afc63084c)
