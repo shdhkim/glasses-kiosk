@@ -270,7 +270,9 @@ public class UserService {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(new Response<>("부분 성공", "Flask 서버 통신 실패. 데이터베이스에는 저장됨. 오류: " + e.getMessage(), null));
         }
-    }public ResponseEntity<Response<List<String>>> send(Long userId) {
+    }
+    @Transactional
+    public ResponseEntity<Response<List<String>>> send(Long userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자입니다. ID: " + userId));
 
