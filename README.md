@@ -40,7 +40,7 @@
 ### [초기 화면]
 |초기 화면|
 |:------:|
-|<img src="https://github.com/user-attachments/assets/96846fef-a7c1-4b68-9277-2246c268f21b" width="500" height="1000"/>|
+|<img src="https://github.com/user-attachments/assets/96846fef-a7c1-4b68-9277-2246c268f21b" width="700" height="700"/>|
 - **[초기 화면 페이지] 입니다. 상단에 [홈]버튼을 클릭하면 초기화면으로 돌아올 수 있습니다.**
 - **가운데 [사진촬영]버튼을 클릭하면 사진촬영 화면으로 넘어 갈 수 있습니다.**
 ### [사진 촬영]
