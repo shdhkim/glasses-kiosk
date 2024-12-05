@@ -46,7 +46,7 @@
 ### [사진 촬영]
 |사진 촬영|
 |:------:|
-|<img src="https://github.com/user-attachments/assets/e1bfb8e0-748c-49ab-bb90-aa257b2ce340" width="756" height="1008"/>|
+|<img src="https://github.com/user-attachments/assets/e1bfb8e0-748c-49ab-bb90-aa257b2ce340" width="540" height="720"/>|
 - **[사진 촬영 페이지] 입니다. 가이드라인에 맞추어 얼굴을 위치한 다음, 사진을 촬영할 수 있습니다.**
 - **사진이 마음에 들지 않을 경우, [다시 찍기]버튼을 클릭하여 재촬영 하거나, [분석 결과 보기]버튼을 클릭하여 사진 분석을 진행 할 수 있습니다.**
 ### [사진 분석]
