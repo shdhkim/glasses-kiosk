@@ -4,7 +4,9 @@
 <h3>얼굴형과 퍼스널 컬러에 따른 안경 추천 앱</h3>
 
 ![온캠퍼스인턴쉽 포스터사진](https://github.com/user-attachments/assets/61f6829a-9427-46c5-8526-ed9cd8141f33)
-
+[FRONTEND github 링크](https://github.com/shdhkim/glasses-kiosk-frontend)
+[BACKEND-main github 링크](https://github.com/shinkyounghwan/glasses-kiosk)
+[BACKEND-AI gighub 링크](https://github.com/llleeco/SWIntership_flask)
 <br/>
 
 ## 🙋‍♂️ 팀원소개
