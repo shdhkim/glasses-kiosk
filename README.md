@@ -40,13 +40,13 @@
 ### [초기 화면]
 |초기 화면|
 |:------:|
-|<img src="https://github.com/user-attachments/assets/96846fef-a7c1-4b68-9277-2246c268f21b" width="864" height="1152"/>|
+|<img src="https://github.com/user-attachments/assets/96846fef-a7c1-4b68-9277-2246c268f21b" width="756" height="1008"/>|
 - **[초기 화면 페이지] 입니다. 상단에 [홈]버튼을 클릭하면 초기화면으로 돌아올 수 있습니다.**
 - **가운데 [사진촬영]버튼을 클릭하면 사진촬영 화면으로 넘어 갈 수 있습니다.**
 ### [사진 촬영]
 |사진 촬영|
 |:------:|
-|<img src="https://github.com/user-attachments/assets/e1bfb8e0-748c-49ab-bb90-aa257b2ce340" width="500" height="1000"/>|
+|<img src="https://github.com/user-attachments/assets/e1bfb8e0-748c-49ab-bb90-aa257b2ce340" width="756" height="1008"/>|
 - **[사진 촬영 페이지] 입니다. 가이드라인에 맞추어 얼굴을 위치한 다음, 사진을 촬영할 수 있습니다.**
 - **사진이 마음에 들지 않을 경우, [다시 찍기]버튼을 클릭하여 재촬영 하거나, [분석 결과 보기]버튼을 클릭하여 사진 분석을 진행 할 수 있습니다.**
 ### [사진 분석]
