@@ -1,20 +1,24 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: skala-ingress
-  namespace: skala-practice
   annotations:
-    nginx.ingress.kubernetes.io/rewrite-target: /
+    cert-manager.io/cluster-issuer: letsencrypt-prod  #  그대로 유지 (TLS 발급용)
+  name: sk008-my-app-ingress                           #  Ingress 이름 수정
+  namespace: skala-practice
 spec:
-  ingressClassName: public-nginx
+  ingressClassName: public-nginx                       #  public-nginx 사용
   rules:
-    - host: sk008.skala25a.project.skala-ai.com
-      http:
-        paths:
-          - path: /
-            pathType: Prefix
-            backend:
-              service:
-                name: skala-service
-                port:
-                  number: 80
+  - host: sk008.skala25a.project.skala-ai.com    # 새로운 도메인 지정
+    http:
+      paths:
+      - backend:
+          service:
+            name: skala-service                       #  연결할 서비스 이름 수정
+            port:
+              number: 8080                             #  서비스 포트
+        path: /
+        pathType: Prefix
+  tls:
+  - hosts:
+    - sk008-my-app.skala25a.project.skala-ai.com        #  TLS에 들어가는 도메인도 수정
+    secretName: sk008-my-app-tls-secret 
