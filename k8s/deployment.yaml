@@ -16,6 +16,6 @@ spec:
     spec:
       containers:
       - name: skala-container
-        image: nginx:latest  # 임시로 nginx 이미지 사용
+        image: amdp-registry.skala-ai.com/skala25a/sk008-my-app@sha256:bd4ceaaa222f03ea558906866f0357ae84b8ae4122e1ce460d4e164f4660cc1d
         ports:
         - containerPort: 80
