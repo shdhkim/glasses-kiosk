@@ -16,6 +16,6 @@ spec:
     spec:
       containers:
       - name: skala-container
-        image: amdp-registry.skala-ai.com/skala25a/sk008-my-app:1.0.kaniko-docker-21-3bb2c8151f5f
+        image: amdp-registry.skala-ai.com/skala25a/sk008-my-app:1.0.kaniko-docker-22-701e0740b397
         ports:
         - containerPort: 80
