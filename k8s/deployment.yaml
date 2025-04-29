@@ -16,6 +16,6 @@ spec:
     spec:
       containers:
       - name: skala-container
-        image: amdp-registry.skala-ai.com/skala25a/sk008-my-app@sha256:bd4ceaaa222f03ea558906866f0357ae84b8ae4122e1ce460d4e164f4660cc1d
+        image: amdp-registry.skala-ai.com/skala25a/sk008-my-app@digest:sha256:fda76700b86a729c539621064cd4b0998806963b19910b31bfaf327f66fb9450
         ports:
         - containerPort: 80
