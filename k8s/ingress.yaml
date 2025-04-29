@@ -20,5 +20,5 @@ spec:
         pathType: Prefix
   tls:
   - hosts:
-    - sk008-my-app.skala25a.project.skala-ai.com        #  TLS에 들어가는 도메인도 수정
+    - sk008.skala25a.project.skala-ai.com        #  TLS에 들어가는 도메인도 수정
     secretName: sk008-my-app-tls-secret 
