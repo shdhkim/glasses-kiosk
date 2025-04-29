@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: skala-app
+  labels:
+    app: skala-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: skala-app
+  template:
+    metadata:
+      labels:
+        app: skala-app
+    spec:
+      containers:
+      - name: skala-container
+        image: nginx:latest  # 임시로 nginx 이미지 사용
+        ports:
+        - containerPort: 80
