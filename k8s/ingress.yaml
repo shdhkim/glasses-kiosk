@@ -15,7 +15,7 @@ spec:
           service:
             name: skala-service                       #  연결할 서비스 이름 수정
             port:
-              number: 8080                             #  서비스 포트
+              number: 80                             #  서비스 포트
         path: /
         pathType: Prefix
   tls:
