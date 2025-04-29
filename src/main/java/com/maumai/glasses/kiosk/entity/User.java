@@ -12,10 +12,11 @@ import java.util.List;
 
 @NoArgsConstructor
 @AllArgsConstructor
-@Entity
+@Entity(name="users")
 @Getter
 @Setter
 @Builder
+
 public class User {
 
     @Id
