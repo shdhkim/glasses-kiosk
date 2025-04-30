@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: skala-app
-  namespace: skala-practice   # ← 추가 권장
+  namespace: skala-practice
   labels:
     app: skala-app
 spec:
@@ -27,20 +27,20 @@ spec:
               topologyKey: "kubernetes.io/hostname"
       containers:
       - name: skala-container
-        image: amdp-registry.skala-ai.com/skala25a/sk008-my-app:1.0.kaniko-docker-34-f663a653a58d
-        imagePullPolicy: IfNotPresent   # ← 명시 추가
+        image: amdp-registry.skala-ai.com/skala25a/sk008-my-app:1.0.kaniko-docker-31-175ba0df82bc
+        imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 8080
         resources:
           requests:
             cpu: "100m"
-            memory: "256Mi"              # ← 메모리도 추가
+            memory: "256Mi"
           limits:
             cpu: "500m"
             memory: "512Mi"
         envFrom:
           - configMapRef:
-              name: skala-config        # ← ConfigMap 분리 권장
+              name: skala-config
         livenessProbe:
           httpGet:
             path: /actuator/health/liveness
