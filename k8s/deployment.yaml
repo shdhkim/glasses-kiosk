@@ -34,7 +34,7 @@ spec:
                 topologyKey: "kubernetes.io/hostname"
       containers:
       - name: skala-container
-        image: amdp-registry.skala-ai.com/skala25a/sk008-my-app:1.0.kaniko-docker-38-0a8faaf10ea1
+        image: amdp-registry.skala-ai.com/skala25a/sk008-my-app:1.0.kaniko-docker-39-d4cd147b3af9
         imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 8080
