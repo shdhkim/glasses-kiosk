@@ -19,3 +19,12 @@ spec:
         image: amdp-registry.skala-ai.com/skala25a/sk008-my-app:1.0.kaniko-docker-31-175ba0df82bc
         ports:
         - containerPort: 8080
+        env:
+        - name: DB_DRIVER
+          value: org.h2.Driver
+        - name: DB_URL
+          value: jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+        - name: DB_USER
+          value: sa
+        - name: DB_PASS
+          value: ""
