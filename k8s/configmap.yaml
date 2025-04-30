@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: skala-config
+  namespace: skala-practice
+data:
+  DB_DRIVER: org.h2.Driver
+  DB_URL: jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+  DB_USER: sa
+  DB_PASS: ""

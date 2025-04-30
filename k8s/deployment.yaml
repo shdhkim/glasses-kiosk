@@ -2,10 +2,11 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: skala-app
+  namespace: skala-practice   # ← 추가 권장
   labels:
     app: skala-app
 spec:
-  replicas: 1
+  replicas: 2
   selector:
     matchLabels:
       app: skala-app
@@ -14,17 +15,47 @@ spec:
       labels:
         app: skala-app
     spec:
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchExpressions:
+                  - key: app
+                    operator: In
+                    values:
+                      - skala-app
+              topologyKey: "kubernetes.io/hostname"
       containers:
       - name: skala-container
-        image: amdp-registry.skala-ai.com/skala25a/sk008-my-app:1.0.kaniko-docker-32-2fae14d50882
+        image: amdp-registry.skala-ai.com/skala25a/sk008-my-app:1.0.kaniko-docker-31-175ba0df82bc
+        imagePullPolicy: IfNotPresent   # ← 명시 추가
         ports:
         - containerPort: 8080
-        env:
-        - name: DB_DRIVER
-          value: org.h2.Driver
-        - name: DB_URL
-          value: jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
-        - name: DB_USER
-          value: sa
-        - name: DB_PASS
-          value: ""
+        resources:
+          requests:
+            cpu: "100m"
+            memory: "256Mi"              # ← 메모리도 추가
+          limits:
+            cpu: "500m"
+            memory: "512Mi"
+        envFrom:
+          - configMapRef:
+              name: skala-config        # ← ConfigMap 분리 권장
+        livenessProbe:
+          httpGet:
+            path: /actuator/health/liveness
+            port: 8080
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /actuator/health/readiness
+            port: 8080
+          initialDelaySeconds: 10
+          periodSeconds: 5
+        startupProbe:
+          httpGet:
+            path: /actuator/health
+            port: 8080
+          failureThreshold: 30
+          periodSeconds: 10
