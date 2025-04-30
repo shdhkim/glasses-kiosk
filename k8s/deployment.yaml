@@ -1,19 +1,19 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: skala-app
+  name: sk008-skala-app
   namespace: skala-practice
   labels:
-    app: skala-app
+    app: sk008-skala-app
 spec:
   replicas: 2
   selector:
     matchLabels:
-      app: skala-app
+      app: sk008-skala-app
   template:
     metadata:
       labels:
-        app: skala-app
+        app: sk008-skala-app
     spec:
       tolerations:
         - key: "control-plane"
@@ -30,7 +30,7 @@ spec:
                     - key: app
                       operator: In
                       values:
-                        - skala-app
+                        - sk008-skala-app
                 topologyKey: "kubernetes.io/hostname"
       containers:
       - name: skala-container
@@ -64,6 +64,6 @@ spec:
           httpGet:
             path: /actuator/health
             port: 8080
-          initialDelaySeconds: 20  
-          failureThreshold: 60     
+          initialDelaySeconds: 20
+          failureThreshold: 60
           periodSeconds: 10

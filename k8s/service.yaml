@@ -5,7 +5,7 @@ metadata:
   namespace: skala-practice
 spec:
   selector:
-    app: skala-app
+    app: sk008-skala-app
   ports:
     - protocol: TCP
       port: 80           # 클라이언트가 접근할 포트
