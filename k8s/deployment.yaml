@@ -15,23 +15,6 @@ spec:
       labels:
         app: sk008-skala-app
     spec:
-      tolerations:
-        - key: "control-plane"
-          operator: "Equal"
-          value: "amdp"
-          effect: "NoSchedule"
-      affinity:
-        podAntiAffinity:
-          preferredDuringSchedulingIgnoredDuringExecution:
-            - weight: 100
-              podAffinityTerm:
-                labelSelector:
-                  matchExpressions:
-                    - key: app
-                      operator: In
-                      values:
-                        - sk008-skala-app
-                topologyKey: "kubernetes.io/hostname"
       containers:
       - name: skala-container
         image: amdp-registry.skala-ai.com/skala25a/sk008-my-app:1.0.kaniko-docker-39-d4cd147b3af9
